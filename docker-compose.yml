@@ -1,0 +1,15 @@
+version: "3"
+services:
+  db:
+    image: "postgres:14.2"
+    container_name: "opal_nova_data"
+    command: postgres -c shared_preload_libraries=pg_stat_statements -c pg_stat_statements.max=10000 -c pg_stat_statements.track=all
+    environment:
+      POSTGRES_DB: "opal_nova_dev"
+      POSTGRES_HOST_AUTH_METHOD: "trust"
+    ports:
+      - "5432:5432"
+    volumes:
+      - opal_nova_data:/var/lib/postgresql/data
+volumes:
+  opal_nova_data:
