@@ -1,6 +1,6 @@
-# fly.toml file generated for opalnova-web on 2021-12-15T22:45:21-08:00
+# fly.toml file generated for opal-nova-web on 2021-12-15T22:45:21-08:00
 
-app = "opalnova-web"
+app = "opal-nova"
 
 kill_signal = "SIGTERM"
 kill_timeout = 5
@@ -10,8 +10,12 @@ processes = []
   release_command = "/app/bin/migrate"
 
 [env]
-  PHX_HOST = "opalnova-web.fly.dev"
-  PORT = "8080"
+  PHX_HOST = "opal-nova.fly.dev"
+  PHX_SCHEME = "https"
+  INT_PORT = "8080"
+  EXT_PORT = "443"
+  ECTO_IPV6 = "true"
+  ERL_AFLAGS = "-proto_dist inet6_tcp"
 
 [experimental]
   allowed_public_ports = []
