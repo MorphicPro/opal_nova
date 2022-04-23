@@ -51,7 +51,7 @@ if config_env() == :prod do
   host = System.get_env("PHX_HOST") || "localhost"
   int_port = String.to_integer(System.get_env("INT_PORT") || "4000")
   ext_port = String.to_integer(System.get_env("EXT_PORT") || "4000")
-  scheme = System.get_env("PHX_HOST") || "http"
+  scheme = System.get_env("PHX_SCHEME") || "http"
 
   config :opal_nova, OpalNovaWeb.Endpoint,
     url: [host: host, port: ext_port, scheme: scheme],

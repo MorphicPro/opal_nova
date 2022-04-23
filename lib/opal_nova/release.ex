@@ -3,7 +3,7 @@ defmodule OpalNova.Release do
   Used for executing DB release tasks when run in production without Mix
   installed.
   """
-  @app :opalnova
+  @app :opal_nova
 
   def migrate do
     load_app()
