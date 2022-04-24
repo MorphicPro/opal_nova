@@ -51,7 +51,7 @@ defmodule OpalNova.MixProject do
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},
       {:bodyguard, "~> 2.4"},
-      {:sentry, "~> 8.0"},
+      {:sentry, "~> 8.0"}
     ]
   end
 
