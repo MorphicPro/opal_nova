@@ -10,7 +10,7 @@ processes = []
   release_command = "/app/bin/migrate"
 
 [env]
-  PHX_HOST = "opal-nova.fly.dev"
+  PHX_HOST = "opalnova.com"
   PHX_SCHEME = "https"
   INT_PORT = "8080"
   EXT_PORT = "443"
