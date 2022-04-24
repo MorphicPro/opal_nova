@@ -17,8 +17,6 @@ defmodule OpalNovaWeb.Router do
     plug :accepts, ["json"]
   end
 
-
-
   # Other scopes may use custom stacks.
   # scope "/api", OpalNovaWeb do
   #   pipe_through :api
@@ -75,7 +73,7 @@ defmodule OpalNovaWeb.Router do
     put "/users/settings", UserSettingsController, :update
     get "/users/settings/confirm_email/:token", UserSettingsController, :confirm_email
 
-    live_session :post_admin, on_mount: OpalNovaWeb.UserAuthLive  do
+    live_session :post_admin, on_mount: OpalNovaWeb.UserAuthLive do
       live "/posts/new", PostLive.Index, :new
       live "/posts/:id/edit", PostLive.Index, :edit
       live "/posts/:id/show/edit", PostLive.Show, :edit
@@ -96,5 +94,4 @@ defmodule OpalNovaWeb.Router do
 
     get "/", PageController, :index
   end
-
 end
