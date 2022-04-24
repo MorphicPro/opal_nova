@@ -30,6 +30,22 @@ if config_env() == :prod do
 
   maybe_ipv6 = if System.get_env("ECTO_IPV6"), do: [:inet6], else: []
 
+  sentry_dns =
+    System.get_env("SENTRY_DNS") ||
+      raise """
+      environment variable SENTRY_DNS is missing.
+      """
+
+  config :sentry,
+    dsn: sentry_dns,
+    environment_name: :prod,
+    enable_source_code_context: true,
+    root_source_code_path: File.cwd!(),
+    tags: %{
+      env: "production"
+    },
+    included_environments: [:prod]
+
   config :opal_nova, OpalNova.Repo,
     # ssl: true,
     url: database_url,
