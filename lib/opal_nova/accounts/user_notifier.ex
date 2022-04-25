@@ -8,7 +8,7 @@ defmodule OpalNova.Accounts.UserNotifier do
     email =
       new()
       |> to(recipient)
-      |> from({"OpalNova", "contact@example.com"})
+      |> from({"OpalNova", "no-reply@opalnova.com"})
       |> subject(subject)
       |> text_body(body)
 
