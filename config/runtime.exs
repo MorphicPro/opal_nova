@@ -86,16 +86,27 @@ if config_env() == :prod do
   # In production you need to configure the mailer to use a different adapter.
   # Also, you may need to configure the Swoosh API client of your choice if you
   # are not using SMTP. Here is an example of the configuration:
-  #
-  #     config :opal_nova, OpalNova.Mailer,
-  #       adapter: Swoosh.Adapters.Mailgun,
-  #       api_key: System.get_env("MAILGUN_API_KEY"),
-  #       domain: System.get_env("MAILGUN_DOMAIN")
-  #
+
+  mailgun_api_key =
+    System.get_env("MAILGUN_API_KEY") ||
+      raise """
+      environment variable MAILGUN_API_KEY is missing.
+      """
+
+  mailgun_domain =
+    System.get_env("MAILGUN_DOMAIN") ||
+      raise """
+      environment variable MAILGUN_DOMAIN is missing.
+      """
+
+  config :opal_nova, OpalNova.Mailer,
+    adapter: Swoosh.Adapters.Mailgun,
+    api_key: mailgun_api_key,
+    domain: mailgun_domain
+
   # For this example you need include a HTTP client required by Swoosh API client.
   # Swoosh supports Hackney and Finch out of the box:
-  #
-  #     config :swoosh, :api_client, Swoosh.ApiClient.Hackney
-  #
+  config :swoosh, :api_client, Swoosh.ApiClient.Hackney
+
   # See https://hexdocs.pm/swoosh/Swoosh.html#module-installation for details.
 end
