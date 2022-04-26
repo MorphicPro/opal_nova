@@ -52,7 +52,8 @@ defmodule OpalNova.MixProject do
       {:bodyguard, "~> 2.4"},
       {:sentry, "~> 8.0"},
       {:hackney, "~> 1.8"},
-      {:swoosh, "~> 1.6"}
+      {:swoosh, "~> 1.6"},
+      {:tailwind, "~> 0.1", runtime: Mix.env() == :dev}
     ]
   end
 
@@ -68,7 +69,7 @@ defmodule OpalNova.MixProject do
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
-      "assets.deploy": ["esbuild default --minify", "phx.digest"]
+      "assets.deploy": ["tailwind default --minify", "esbuild default --minify", "phx.digest"]
     ]
   end
 end
