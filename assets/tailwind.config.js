@@ -5,8 +5,7 @@ const colors = require('tailwindcss/colors')
 module.exports = {
   content: [
     './js/**/*.js',
-    '../lib/*_web.ex',
-    '../lib/*_web/**/*.*ex'
+    '../lib/opal_nova_web/**/*.*ex'
   ],
   theme: {
     extend: {

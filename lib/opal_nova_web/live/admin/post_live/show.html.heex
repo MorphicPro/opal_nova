@@ -1,0 +1,47 @@
+<.page_layout>
+  <:page_header>
+    <.page_header>
+      <:left>
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <%= live_redirect to: Routes.post_index_path(@socket, :index), class: "relative inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-slate-600 shadow-sm hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500" do %>
+              <FontAwesome.LiveView.icon name="circle-chevron-left" type="solid" class="mr-0 sm:mr-2 inline h-4 w-4 fill-current" /> <span class="hidden sm:block">Back</span>
+            <% end %>
+            <%= live_patch to: Routes.post_form_path(@socket, :edit, @post), class: "relative inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-amber-600 shadow-sm hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500" do %>
+              <FontAwesome.LiveView.icon name="pencil" type="solid" class="mr-0 sm:mr-2 inline h-4 w-4 fill-current" /> <span class="hidden sm:block">Edit</span>
+            <% end %>
+            <%= if published?(@post) do %>
+            <%= live_patch to: Routes.fe_post_show_path(@socket, :show, @post.slug), class: "relative inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500" do %>
+                <FontAwesome.LiveView.icon name="link" type="solid" class="mr-0 sm:mr-2 inline h-4 w-4 fill-current" /> <span class="hidden sm:block">Published at</span>
+            <% end %>
+            <% else %>
+              <span class="relative inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                <FontAwesome.LiveView.icon name="calendar-xmark" type="solid" class="mr-0 sm:mr-2 inline h-4 w-4 fill-current" /> <span class="hidden sm:block">Not Published</span>
+              </span>
+            <% end %>
+          </div>
+        </div>
+      </:left>
+      <:right>
+        <.user_nav current_user={@current_user} login={Routes.user_session_path(@socket, :new)} register={Routes.user_registration_path(@socket, :new)} />
+      </:right>
+    </.page_header>
+  </:page_header>
+  
+  <:title>
+    <h1 class="text-3xl font-bold text-slate-700 pb-2"><%= @post.title %></h1>
+    <a href="#" class="relative hover:underline text-gray-400">
+      <FontAwesome.LiveView.icon name="calendar" type="solid" class="absolute top-1 h-3 w-3 fill-current" />
+      <span><time class="text-sm pl-4 mb-2" datetime={@post.published_at} ><%= published_date(@post.published_at)%></time></span>
+    </a> 
+  </:title>
+  <img src={"#{@post.cover_image}"} /> 
+  <div class="prose mt-8">
+  <%= @post.body |> parse_markdown() |> raw %>
+
+  <hr class="my-8"/>
+  <%= @post.description |> parse_markdown() |> raw %>
+  </div>
+
+
+</.page_layout>

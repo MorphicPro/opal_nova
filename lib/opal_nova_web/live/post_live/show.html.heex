@@ -1,46 +1,41 @@
-<h1>Show Post</h1>
+<.post_layout>
+  <:page_header>
+    <.page_header>
+      <:left>
+        <div class="flex items-center">
+          <a href="/">Opal Nova</a>
+        </div>
+      </:left>
+      <:right>
+        <.user_nav current_user={@current_user} login={Routes.user_session_path(@socket, :new)} register={Routes.user_registration_path(@socket, :new)} />
+      </:right>
+    </.page_header>
+  </:page_header>
 
-<%= if @live_action in [:edit] do %>
-  <.modal return_to={Routes.post_show_path(@socket, :show, @post)}>
-    <.live_component
-      module={OpalNovaWeb.PostLive.FormComponent}
-      id={@post.id}
-      title={@page_title}
-      action={@live_action}
-      post={@post}
-      return_to={Routes.post_show_path(@socket, :show, @post)}
-    />
-  </.modal>
-<% end %>
+  <div class="bg-white overflow-hidden">
+    <div class="relative px-4 sm:px-6 lg:px-8">
+      <div class="text-lg max-w-prose mx-auto">
+        <h1>
+          <span class="mt-2 block text-3xl text-center leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl"><%= @post.title %></span>
+          <span class="block text-base text-center text-indigo-600 font-semibold tracking-wide uppercase"><time class="text-sm pl-4 mb-2" datetime={@post.published_at} ><%= published_date(@post.published_at)%></time></span>
+        </h1>
+      </div>
+      <div class="mt-6 prose prose-indigo prose-lg text-gray-500 mx-auto">
+        <img class="mx-auto w-full" src={"#{@post.cover_image}"} /> 
+        <%= @post.body |> parse_markdown() |> raw %>
+      </div>
+    </div>
+  </div>
 
-<ul>
+  <hr class="my-20" />
+  
+  <.comments comments={@post.comments} />
 
-  <li>
-    <strong>Title:</strong>
-    <%= @post.title %>
-  </li>
+  <.live_component
+    module={OpalNovaWeb.CommentLive.FormComponent}
+    id={:new}
+    comment={@comment}
+    post_id={@post.id}
+  />
 
-  <li>
-    <strong>Body:</strong>
-    <%= @post.body %>
-  </li>
-
-  <li>
-    <strong>Description:</strong>
-    <%= @post.description %>
-  </li>
-
-  <li>
-    <strong>Published at:</strong>
-    <%= @post.published_at %>
-  </li>
-
-  <li>
-    <strong>Draft:</strong>
-    <%= @post.draft %>
-  </li>
-
-</ul>
-
-<span><%= live_patch "Edit", to: Routes.post_show_path(@socket, :edit, @post), class: "button" %></span> |
-<span><%= live_redirect "Back", to: Routes.post_index_path(@socket, :index) %></span>
+</.post_layout>

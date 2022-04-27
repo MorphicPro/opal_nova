@@ -1,0 +1,59 @@
+<div class="min-h-full flex">
+  <.live_component module={NavLive} id="nav">
+    <:links>
+      <NavLive.link path={"/admin"} active={@socket.view |> to_string =~ "DashLive"}>
+        <:icon>
+          <NavLive.icon type="solid" name="house" active={@socket.view |> to_string =~ "DashLive"} />
+        </:icon>
+        Dashboard
+      </NavLive.link>
+
+      <NavLive.link path={"/admin/posts"} active={@socket.view |> to_string =~ "Admin.PostLive"}>
+        <:icon>
+          <NavLive.icon type="solid" name="pencil" active={@socket.view |> to_string =~ "Admin.PostLive"} />
+        </:icon>
+        Blog posts
+      </NavLive.link>
+        
+      <%# <NavLive.link path={"/admin/posts"} active={@socket.view |> to_string =~ "PostCommentsLive"}>
+        <:icon>
+          <NavLive.icon type="solid" name="tags" active={@socket.view |> to_string =~ "PostCommentsLive"} />
+        </:icon>
+        Post Tags
+      </NavLive.link>
+
+      <NavLive.link path={"/admin/posts"} active={@socket.view |> to_string =~ "PostCommentsLive"}>
+        <:icon>
+          <NavLive.icon type="solid" name="comments" active={@socket.view |> to_string =~ "PostCommentsLive"} />
+        </:icon>
+        Post comments
+      </NavLive.link>
+
+      <NavLive.link path={"/admin/users"} active={@socket.view |> to_string =~ "UsersLive"}>
+        <:icon>
+          <NavLive.icon type="solid" name="users" active={@socket.view |> to_string =~ "UsersLive"} />
+        </:icon>
+        Users
+      </NavLive.link>
+
+      <NavLive.link path={"/admin/users"} active={@socket.view |> to_string =~ "UsersLive"}>
+        <:icon>
+          <NavLive.icon type="solid" name="store" active={@socket.view |> to_string =~ "UsersLive"} />
+        </:icon>
+        Products
+      </NavLive.link>
+
+      <NavLive.link path={"/admin/users"} active={@socket.view |> to_string =~ "UsersLive"}>
+        <:icon>
+          <NavLive.icon type="solid" name="cash-register" active={@socket.view |> to_string =~ "UsersLive"} />
+        </:icon>
+        Orders
+      </NavLive.link> %>
+
+      
+    </:links>
+  </.live_component>
+
+  <%= @inner_content %>
+
+</div>

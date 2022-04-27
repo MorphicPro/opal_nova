@@ -42,6 +42,15 @@ defmodule OpalNovaWeb do
     end
   end
 
+  def live_view_admin do
+    quote do
+      use Phoenix.LiveView,
+        layout: {OpalNovaWeb.LayoutView, "admin_live.html"}
+
+      unquote(view_helpers())
+    end
+  end
+
   def live_view do
     quote do
       use Phoenix.LiveView,

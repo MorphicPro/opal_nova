@@ -1,0 +1,152 @@
+<.page_layout class="bg-gray-100">
+
+  <:page_header>
+    <.page_header>
+      <:left>
+        <.search />
+      </:left>
+      <:right>
+        <.user_nav current_user={@current_user} login={Routes.user_session_path(@socket, :new)} />
+      </:right>
+    </.page_header>
+  </:page_header>
+
+  <:title>
+    <div class="sm:flex sm:items-center lg:my-0 my-8">
+      <div class="sm:flex-auto">
+        <h1 class="text-xl font-semibold text-gray-900">Posts</h1>
+        <p class="mt-2 text-sm text-gray-700"><%= "Listing #{Enum.count(@posts)} blog posts." %></p>
+      </div>
+      <div class="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
+        <%= live_patch to: Routes.post_form_path(@socket, :new), class: "px-4 py-3 rounded-lg shadow-sm sm font-medium text-white shadow-sm bg-teal-500 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto" do %>
+          <FontAwesome.LiveView.icon name="circle-plus" type="solid" class="inline h-4 w-4 fill-current" />
+          <span class='ml-2 pt-1'>New Post</span>
+        <% end %>
+      </div>
+    </div> 
+  </:title>
+
+  <%= if @live_action in [:new, :edit] do %>
+    <.modal return_to={Routes.post_index_path(@socket, :index)}>
+      <.live_component
+        module={OpalNovaWeb.Admin.PostLive.FormComponent}
+        id={@post.id || :new}
+        title={@page_title}
+        action={@live_action}
+        post={@post}
+        return_to={Routes.post_index_path(@socket, :index)}
+      />
+    </.modal>
+  <% end %>
+  <ul role="list" class="space-y-4">
+    <%= for post <- @posts do %>
+    <li class="bg-white px-4 py-6 shadow sm:p-6 sm:rounded-lg">
+      <article class="md:flex">
+        <div class="mb-4 flex-shrink-0 md:mb-0 md:mr-4">
+          <%= live_redirect to: Routes.post_show_path(@socket, :show, post) do %>
+          <img src={post.cover_image} class="w-full md:w-48 mt-4" %>
+          <% end %>
+        </div>
+        <div class="w-full">
+          <div>
+            <div class="flex space-x-3">  
+              <div class="min-w-0 flex-1">
+                <h2 class="mt-4 text-lg font-medium text-gray-900"><%= live_redirect to: Routes.post_show_path(@socket, :show, post), class: "hover:underline hover:text-gray-500" do %><%= post.title %><% end %></h2>
+                <p class="text-sm text-gray-500 mt-2">
+                  <a href="#" class="relative first-letter:hover:underline">
+                    <FontAwesome.LiveView.icon name="calendar" type="solid" class="absolute top-0.5 h-3 w-3 fill-current" />
+
+                    <time class="pl-4" datetime={post.published_at} ><%= published_date(post.published_at)%></time>
+                  </a>
+                </p>
+              </div>
+              <div class="flex-shrink-0 self-center flex">
+                <%= if published?(post) do %>
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-sm font-medium bg-green-100 text-green-800">Published</span>
+                <% else %>
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-sm font-medium bg-red-100 text-red-800">Not Published</span>
+                <% end %>
+                <div class="relative inline-block text-left">
+                  <div class="inline-flex pt-1.5 pl-2">
+                    <button 
+                      phx-click={Phoenix.LiveView.JS.show(to: "#post-options-menu-#{post.id}", transition: {"transition ease-in-out duration-150", "opacity-0 scale-95", "opacity-100 scale-100"})}
+                      phx-click-away={Phoenix.LiveView.JS.hide(to: "#post-options-menu-#{post.id}", transition: {"transition ease-in-out duration-150", "opacity-100 scale-100", "opacity-0 scale-95"})}
+                      type="button" 
+                      class="inline-flex items-center px-2.5 py-0. -m-2 p-2 rounded-full flex items-center text-gray-400 hover:text-gray-600" 
+                      id={"post-options-#{post.id}"}
+                      aria-expanded="false" 
+                      aria-haspopup="true">
+                      <span class="sr-only">Open options</span>
+                      <FontAwesome.LiveView.icon name="ellipsis-vertical" type="solid" class="h-5 w-5"} />
+                    </button>
+                  </div>
+
+                  <div id={"post-options-menu-#{post.id}"} class="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="options-menu-0-button" tabindex="-1" style="display: none">
+                    <div class="py-1" role="none">
+                      <%= live_redirect to: Routes.fe_post_show_path(@socket, :show, post.slug), class: "text-gray-700 flex px-4 py-2 text-sm" do %>
+                        <FontAwesome.LiveView.icon name="eye"  type="solid" class="mr-3 h-5 w-5 text-gray-400 fill-current" />
+                        <span>View</span>
+                      <% end %>
+
+                      <%= live_patch to: Routes.post_form_path(@socket, :edit, post), class: "text-gray-700 flex px-4 py-2 text-sm" do %>
+                        <FontAwesome.LiveView.icon name="file-pen"  type="solid" class="mr-3 h-5 w-5 text-gray-400 fill-current" /> 
+                        <span>Edit Post</span>
+                      <% end %>
+
+                      <%= link to: "#", phx_click: "delete", class: "text-gray-700 flex px-4 py-2 text-sm", phx_value_id: post.id, data: [confirm: "Are you sure?"] do %>
+                        <FontAwesome.LiveView.icon name="trash-can"  type="solid" class="mr-3 h-5 w-5 text-gray-400 fill-current" /> 
+                        <span>Delete Post</span>
+                      <% end %>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="my-6 text-sm text-gray-700 space-y-4 prose-sm">
+            <%= post.description %>
+          </div>
+          
+          <div class="mt-8 pt-6 flex justify-between space-x-8 border-solid border-t border-gray-200">
+            <div class="flex space-x-6">
+              <span class="inline-flex items-center text-sm">
+                <button type="button" class="inline-flex space-x-2 text-gray-400 hover:text-gray-500">
+                  <!-- Heroicon name: solid/thumb-up -->
+                  <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path d="M2 10.5a1.5 1.5 0 113 0v6a1.5 1.5 0 01-3 0v-6zM6 10.333v5.43a2 2 0 001.106 1.79l.05.025A4 4 0 008.943 18h5.416a2 2 0 001.962-1.608l1.2-6A2 2 0 0015.56 8H12V4a2 2 0 00-2-2 1 1 0 00-1 1v.667a4 4 0 01-.8 2.4L6.8 7.933a4 4 0 00-.8 2.4z" />
+                  </svg>
+                  <span class="font-medium text-gray-900">29</span>
+                  <span class="sr-only">likes</span>
+                </button>
+              </span>
+              <span class="inline-flex items-center text-sm">
+                <button type="button" class="inline-flex space-x-2 text-gray-400 hover:text-gray-500">
+                  <!-- Heroicon name: solid/chat-alt -->
+                  <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M18 5v8a2 2 0 01-2 2h-5l-5 4v-4H4a2 2 0 01-2-2V5a2 2 0 012-2h12a2 2 0 012 2zM7 8H5v2h2V8zm2 0h2v2H9V8zm6 0h-2v2h2V8z" clip-rule="evenodd" />
+                  </svg>
+                  <span class="font-medium text-gray-900">11</span>
+                  <span class="sr-only">replies</span>
+                </button>
+              </span> 
+              <span class="inline-flex items-center text-sm">
+                <button type="button" class="inline-flex space-x-2 text-gray-400 hover:text-gray-500">
+                  <!-- Heroicon name: solid/eye -->
+                  <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                    <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
+                  </svg>
+                  <span class="font-medium text-gray-900">2.7k</span>
+                  <span class="sr-only">views</span>
+                </button>
+              </span>
+            </div>
+          </div>
+          
+        </div>
+      </article>
+    </li>
+    <% end %>
+  </ul>
+
+</.page_layout>

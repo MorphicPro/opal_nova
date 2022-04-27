@@ -1,47 +1,69 @@
-<h1>Listing Posts</h1>
+<.post_layout class="">
 
-<%= if @live_action in [:new, :edit] do %>
-  <.modal return_to={Routes.post_index_path(@socket, :index)}>
-    <.live_component
-      module={OpalNovaWeb.PostLive.FormComponent}
-      id={@post.id || :new}
-      title={@page_title}
-      action={@live_action}
-      post={@post}
-      return_to={Routes.post_index_path(@socket, :index)}
-    />
-  </.modal>
-<% end %>
+  <:page_header>
+    <.page_header>
+      <:left>
+        <div class="flex items-center">
+          <a href="/">Opal Nova</a>
+        </div>
+      </:left>
+      <:right>
+        <.user_nav current_user={@current_user} login={Routes.user_session_path(@socket, :new)} register={Routes.user_registration_path(@socket, :new)} />
+      </:right>
+    </.page_header>
+  </:page_header>
 
-<table>
-  <thead>
-    <tr>
-      <th>Title</th>
-      <th>Body</th>
-      <th>Description</th>
-      <th>Published at</th>
-      <th>Draft</th>
+  <:title>
+    <div class="sm:flex sm:items-center lg:my-0 my-8">
+      <div class="sm:flex-auto">
+        <h1 class="text-xl font-semibold text-gray-900">Posts</h1>
+        <p class="mt-2 text-sm text-gray-700"><%= "Listing #{Enum.count(@posts)} blog posts." %></p>
+      </div>
+    </div> 
+  </:title>
 
-      <th></th>
-    </tr>
-  </thead>
-  <tbody id="posts">
+  <%= if @live_action in [:new, :edit] do %>
+    <.modal return_to={Routes.post_index_path(@socket, :index)}>
+      <.live_component
+        module={OpalNovaWeb.Admin.PostLive.FormComponent}
+        id={@post.id || :new}
+        title={@page_title}
+        action={@live_action}
+        post={@post}
+        return_to={Routes.post_index_path(@socket, :index)}
+      />
+    </.modal>
+  <% end %>
+  <ul role="list" class="space-y-10">
     <%= for post <- @posts do %>
-      <tr id={"post-#{post.id}"}>
-        <td><%= post.title %></td>
-        <td><%= post.body %></td>
-        <td><%= post.description %></td>
-        <td><%= post.published_at %></td>
-        <td><%= post.draft %></td>
-
-        <td>
-          <span><%= live_redirect "Show", to: Routes.post_show_path(@socket, :show, post) %></span>
-          <span><%= live_patch "Edit", to: Routes.post_index_path(@socket, :edit, post) %></span>
-          <span><%= link "Delete", to: "#", phx_click: "delete", phx_value_id: post.id, data: [confirm: "Are you sure?"] %></span>
-        </td>
-      </tr>
+    <li class="bg-white px-8 py-6 shadow sm:p-6 sm:rounded-lg border border-slate-300">
+      <article class="md:flex">
+        <div class="mb-4 flex-shrink-0 md:mb-0 md:mr-4">
+          <%= live_redirect to: Routes.fe_post_show_path(@socket, :show, post.slug) do %>
+          <img src={post.cover_image} class="w-full md:w-48 mt-4" %>
+          <% end %>
+        </div>
+        <div class="w-full">
+          <div>
+            <div class="flex space-x-3">  
+              <div class="min-w-0 flex-1">
+                <h2 class="mt-4 text-lg font-medium text-gray-900"><%= live_redirect to: Routes.fe_post_show_path(@socket, :show, post.slug), class: "hover:underline hover:text-gray-500" do %><%= post.title %><% end %></h2>
+                <p class="text-sm text-gray-500 mt-2">
+                  <a href="#" class="relative first-letter:hover:underline">
+                    <FontAwesome.LiveView.icon name="calendar" type="solid" class="absolute top-0.5 h-3 w-3 fill-current" />
+                    <time class="pl-4" datetime={post.published_at} ><%= published_date(post.published_at)%></time>
+                  </a>
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="my-6 text-sm text-gray-700 space-y-4 prose-sm">
+            <%= post.description %>
+          </div>
+        </div>
+      </article>
+    </li>
     <% end %>
-  </tbody>
-</table>
+  </ul>
 
-<span><%= live_patch "New Post", to: Routes.post_index_path(@socket, :new) %></span>
+</.post_layout>

@@ -3,12 +3,31 @@
 @tailwind components;
 @tailwind utilities;
 
+.nav-link {
+  @apply flex items-center px-2 py-2 text-sm font-medium rounded-md;
+}
+.current {
+  @apply bg-gray-900 text-white;
+}
+.inactive {
+  @apply text-gray-300 hover:bg-gray-700 hover:text-white;
+}
 
+.icon {
+  @apply mr-3 flex-shrink-0 h-6 w-6 fill-current;
+}
+
+.icon-active {
+  @apply text-gray-300;
+}
+
+.icon-inactive {
+  @apply text-gray-400 group-hover:text-gray-300;
+}
 
 /* Alerts and form errors used by phx.new */
 .alert {
   padding: 15px;
-  margin-bottom: 20px;
   border: 1px solid transparent;
   border-radius: 4px;
 }
@@ -32,11 +51,6 @@
 }
 .alert:empty {
   display: none;
-}
-.invalid-feedback {
-  color: #a94442;
-  display: block;
-  margin: -1rem 0 2rem;
 }
 
 /* LiveView specific classes for your customization */
@@ -96,6 +110,10 @@
   animation: 0.2s ease-out 0s normal forwards 1 fade-out-scale-keys;
 }
 
+.fade-in-slow {
+  animation: 1s ease-out 0s normal forwards 1 fade-in-keys;
+}
+
 .fade-in {
   animation: 0.2s ease-out 0s normal forwards 1 fade-in-keys;
 }
@@ -121,4 +139,36 @@
 @keyframes fade-out-keys{
   0% { opacity: 1; }
   100% { opacity: 0; }
+}
+
+progress {
+  -webkit-animation: animate-stripes 5s linear infinite;
+  animation: animate-stripes 5s linear infinite;
+}
+progress[value]::-webkit-progress-value {
+
+  background-image:
+
+    -webkit-linear-gradient(-45deg, 
+                            transparent 33%, rgba(0, 0, 0, .1) 33%, 
+                            rgba(0,0, 0, .1) 66%, transparent 66%),
+    -webkit-linear-gradient(top, 
+                            rgba(255, 255, 255, .25), 
+                            rgba(0, 0, 0, .25)),
+    -webkit-linear-gradient(left, #09c, #f44);
+
+    border-radius: 2px; 
+    background-size: 35px 20px, 100% 100%, 100% 100%;
+}
+
+@-webkit-keyframes animate-stripes {
+  100% { background-position: -100px 0px; }
+}
+
+@keyframes animate-stripes {
+  100% { background-position: -100px 0px; }
+}
+
+.phx-no-feedback.invalid-feedback, .phx-no-feedback .invalid-feedback {
+  display: none;
 }

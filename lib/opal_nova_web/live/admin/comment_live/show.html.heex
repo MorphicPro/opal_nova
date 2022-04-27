@@ -1,0 +1,31 @@
+<h1>Show Comment</h1>
+
+<%= if @live_action in [:edit] do %>
+  <.modal return_to={Routes.comment_show_path(@socket, :show, @comment)}>
+    <.live_component
+      module={OpalNovaWeb.Admin.CommentLive.FormComponent}
+      id={@comment.id}
+      title={@page_title}
+      action={@live_action}
+      comment={@comment}
+      return_to={Routes.comment_show_path(@socket, :show, @comment)}
+    />
+  </.modal>
+<% end %>
+
+<ul>
+
+  <li>
+    <strong>Message:</strong>
+    <%= @comment.message %>
+  </li>
+
+  <li>
+    <strong>Flagged:</strong>
+    <%= @comment.flagged %>
+  </li>
+
+</ul>
+
+<span><%= live_patch "Edit", to: Routes.comment_show_path(@socket, :edit, @comment), class: "button" %></span> |
+<span><%= live_redirect "Back", to: Routes.comment_index_path(@socket, :index) %></span>

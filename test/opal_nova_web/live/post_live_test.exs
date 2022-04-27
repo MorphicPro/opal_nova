@@ -1,4 +1,4 @@
-defmodule OpalNovaWeb.PostLiveTest do
+defmodule OpalNovaWeb.Admin.PostLiveTest do
   use OpalNovaWeb.ConnCase
 
   import Phoenix.LiveViewTest

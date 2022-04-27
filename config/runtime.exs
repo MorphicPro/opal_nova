@@ -104,9 +104,31 @@ if config_env() == :prod do
     api_key: mailgun_api_key,
     domain: mailgun_domain
 
+  # See https://hexdocs.pm/swoosh/Swoosh.html#module-installation for details.
   # For this example you need include a HTTP client required by Swoosh API client.
   # Swoosh supports Hackney and Finch out of the box:
   config :swoosh, :api_client, Swoosh.ApiClient.Hackney
 
-  # See https://hexdocs.pm/swoosh/Swoosh.html#module-installation for details.
+  minio_access_key_id =
+    System.get_env("MINIO_ACCESS_KEY_ID") ||
+      raise """
+      environment variable MINIO_ACCESS_KEY_ID is missing.
+      """
+
+  minio_secret_access_key =
+    System.get_env("MINIO_SECRET_ACCESS_KEY") ||
+      raise """
+      environment variable MINIO_SECRET_ACCESS_KEY is missing.
+      """
+
+  minio_host =
+    System.get_env("MINIO_HOST") ||
+      raise """
+      environment variable MINIO_HOST is missing.
+      """
+
+  config :opal_nova, :simple_minio_uploader,
+    access_key: minio_access_key_id,
+    secret_key: minio_secret_access_key,
+    host: minio_host
 end

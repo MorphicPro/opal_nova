@@ -1,26 +1,49 @@
-<h1>Register</h1>
-
-<.form let={f} for={@changeset} action={Routes.user_registration_path(@conn, :create)}>
+<div class="min-h-full flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+  <div class="sm:mx-auto sm:w-full sm:max-w-md">
+    <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">Register your account</h2>
   <%= if @changeset.action do %>
-    <div class="alert alert-danger">
+    <div class="mt-12 alert alert-danger">
       <p>Oops, something went wrong! Please check the errors below.</p>
     </div>
   <% end %>
-
-  <%= label f, :email %>
-  <%= email_input f, :email, required: true %>
-  <%= error_tag f, :email %>
-
-  <%= label f, :password %>
-  <%= password_input f, :password, required: true %>
-  <%= error_tag f, :password %>
-
-  <div>
-    <%= submit "Register" %>
   </div>
-</.form>
 
-<p>
-  <%= link "Log in", to: Routes.user_session_path(@conn, :new) %> |
-  <%= link "Forgot your password?", to: Routes.user_reset_password_path(@conn, :new) %>
-</p>
+  <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+    <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+      <.form let={f} for={@changeset} action={Routes.user_registration_path(@conn, :create)} class="space-y-6">
+
+        <div>
+          <label for="user_email" class="block text-sm font-medium text-gray-700"> Email address </label>
+          <div class="mt-1">
+            <input id="user_email" name="user[email]" type="email" autocomplete="email" required class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+          </div>
+          <%= error_tag f, :email %>
+
+        </div>
+
+        <div>
+          <label for="user_password" class="block text-sm font-medium text-gray-700"> Password </label>
+          <div class="mt-1">
+            <input id="user_password" name="user[password]" type="password" autocomplete="current-password" required class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+          </div>
+          <%= error_tag f, :password %>
+
+        </div>
+
+        <div>
+          <%= submit "Register", class: "w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" %>
+        </div>
+      </.form>
+
+      <div class="flex items-center justify-between">
+        <div class="flex items-center">
+          <%= link "Log in", to: Routes.user_session_path(@conn, :new) %>
+        </div>
+        <div class="text-sm">
+          <%= link "Forgot your password?", to: Routes.user_reset_password_path(@conn, :new), class: "font-medium text-indigo-600 hover:text-indigo-500"%>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

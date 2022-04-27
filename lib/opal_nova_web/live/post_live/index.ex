@@ -2,28 +2,23 @@ defmodule OpalNovaWeb.PostLive.Index do
   use OpalNovaWeb, :live_view
 
   alias OpalNova.Blog
-  alias OpalNova.Blog.Post
 
   @impl true
   def mount(_params, _session, socket) do
+    posts = list_posts()
+
+    if connected?(socket) do
+      Enum.each(posts, fn %{id: id} ->
+        Phoenix.PubSub.subscribe(OpalNova.PubSub, "post:#{id}")
+      end)
+    end
+
     {:ok, assign(socket, :posts, list_posts())}
   end
 
   @impl true
   def handle_params(params, _url, socket) do
     {:noreply, apply_action(socket, socket.assigns.live_action, params)}
-  end
-
-  defp apply_action(socket, :edit, %{"id" => id}) do
-    socket
-    |> assign(:page_title, "Edit Post")
-    |> assign(:post, Blog.get_post!(id))
-  end
-
-  defp apply_action(socket, :new, _params) do
-    socket
-    |> assign(:page_title, "New Post")
-    |> assign(:post, %Post{})
   end
 
   defp apply_action(socket, :index, _params) do
@@ -40,7 +35,30 @@ defmodule OpalNovaWeb.PostLive.Index do
     {:noreply, assign(socket, :posts, list_posts())}
   end
 
+  def handle_event("search", %{"_target" => ["search"], "search" => search}, socket) do
+    {:noreply, assign(socket, :posts, OpalNova.Blog.post_search(search))}
+  end
+
+  def handle_event("save", %{"search" => search}, socket) do
+    {:noreply, assign(socket, :posts, OpalNova.Blog.post_search(search))}
+  end
+
+  def handle_event("search", %{"search" => search}, socket) do
+    {:noreply, assign(socket, :posts, OpalNova.Blog.post_search(search))}
+  end
+
+  @impl true
+  def handle_info({:post_edited, %{id: id} = post}, %{assigns: %{posts: posts}} = socket) do
+    posts =
+      Enum.map(posts, fn
+        %{id: ^id} -> post
+        p -> p
+      end)
+
+    {:noreply, assign(socket, posts: posts)}
+  end
+
   defp list_posts do
-    Blog.list_posts()
+    Blog.list_published_posts()
   end
 end

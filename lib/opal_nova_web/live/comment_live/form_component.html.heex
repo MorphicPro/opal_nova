@@ -1,0 +1,35 @@
+<div class="prose prose-lg mx-auto mt-20">
+  <.form
+    let={f}
+    for={@changeset}
+    id="comment-form"
+    phx-target={@myself}
+    phx-submit="save">
+
+    <div>
+      <div class="mt-2">
+        <div id="tabs-1-panel-1" class="p-0.5 -m-0.5 rounded-lg" aria-labelledby="tabs-1-tab-1" role="tabpanel" tabindex="0">
+          <div>
+            <%= text_input f, :name, class: "appearance-none px-3 mb-2 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm mr-2 inline-flex w-48 items-center", placeholder: "Your name" %>
+            <%= textarea f, :message, rows: "5", class: "shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md", placeholder: "Add your comment..." %>
+            <%= error_tag f, :message %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-2 md:flex justify-end">
+      <%= raw(image(@changeset.changes.captcha.image)) %>
+      <%= error_tag f, :captcha_return %>
+
+      <div class="inline-flex items-center">
+      
+      <%= text_input f, :captcha_return, class: "appearance-none px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm mr-2", placeholder: "Enter captcha" %>
+      
+      <%= submit "Submit", phx_disable_with: "Saving...", type: "submit", class: "px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" %>
+      </div>
+
+    </div>
+
+  </.form>
+</div>

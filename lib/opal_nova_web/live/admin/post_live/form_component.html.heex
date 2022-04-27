@@ -1,0 +1,164 @@
+<div>
+<.form
+    id="post-form"
+    let={f}
+    for={@changeset}
+    phx-target={@myself}
+    phx-change="validate"
+    phx-submit="save"
+    class="space-y-8 divide-y divide-gray-200"
+    >
+
+  <div class="space-y-8 divide-y divide-gray-200">
+    <div class="mt-6 grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
+      
+      <div class="sm:col-span-3">
+        <%= label f, :title, class: "block text-sm font-medium text-gray-700" %>
+        <div class="mt-1">
+          <%= text_input f, :title, class: "shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md" %>
+          <%= error_tag f, :title %>
+        </div>
+      </div>
+
+      <div class="sm:col-span-3">
+        <%= label f, :slug, class: "block text-sm font-medium text-gray-700" do %>Slug<% end %> 
+        <div class="mt-1">
+          <%= text_input f, :slug, class: "shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md" %>
+          <span class="text-gray-400" phx-click="set-slug" phx-target={@myself}>Generate from title</span>
+          <%= error_tag f, :slug %>
+        </div>
+      </div>
+
+      <div class="sm:col-span-6" phx-drop-target={@uploads.image.ref}>
+        <%= label f, :cover_image, "Cover photo", class: "block text-sm font-medium text-gray-700" %>
+        <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+          <div class="space-y-1 text-center">
+            <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
+              <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            <div class="flex justify-center text-sm text-gray-600 mx-auto">
+              <label class="relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500">
+                <span>Upload a file</span>
+                <%= live_file_input @uploads.image, class: "sr-only" %>
+              </label>
+              <p class="pl-1">or drag and drop</p>
+            </div>
+            <p class="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+            <%#= error_tag f, :image %>
+
+          <%= if @uploads.image.entries == [] and @post.thumb_image do %>
+            <img class="w-[300px] mx-auto mb-2" src={@post.thumb_image} />
+            <div>
+              <div class="mt-4 relative rounded-2xl shadow-mb ">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <FontAwesome.LiveView.icon name="copy" type="solid" class="text-slate-100 inline h-6 w-6 fill-current ml-2" />
+                </div>
+                <input type="" class="bg-neutral-600 text-slate-100 focus:ring-gray-500 focus:border-gray-500 block w-full pl-14 px-6 py-4 sm:text-sm border-gray-300 rounded-lg" value={@post.cover_image} />
+              </div>
+            </div>
+          <% else %>
+            <%# Phoenix.LiveView.Helpers.upload_errors/1 returns a list of error atoms %>
+            <%= for err <- upload_errors(@uploads.image) do %>
+              <p class="alert alert-danger"><%= error_to_string(err) %></p>
+            <% end %>
+          <% end %>
+          <%= for entry <- @uploads.image.entries do %>
+            <article class="upload-entry">
+              <figure>
+                <%= live_img_preview entry, width: 300 %>
+                <figcaption><%= entry.client_name %></figcaption>
+              </figure>
+
+              <progress value={entry.progress} max="100"> <%= entry.progress %>% </progress>
+
+              <a phx-click="cancel-upload" phx-target={@myself} phx-value-ref={entry.ref} aria-label="cancel">&times;</a>
+
+              <%= for err <- upload_errors(@uploads.image, entry) do %>
+                <p class="alert alert-danger"><%= error_to_string(err) %></p>
+              <% end %>
+            </article>
+          <% end %>
+          </div>
+        </div>
+      </div>
+
+      <div class="sm:col-span-1">
+        <%= label f, :published_at, "Publish On", class: "block text-sm font-medium text-gray-700" %>
+        <div class="mt-1">
+          <%= date_input f, :published_at, class: "shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md" %>
+          <%= error_tag f, :published_at %>
+        </div>
+      </div>
+
+      <div class="sm:col-span-1">
+        <label for="first-name" class="block text-sm font-medium text-gray-700">Published: <%= if toggle_draft_field(@changeset), do: "Draft", else: "Published" %></label>
+
+        <div class="mt-1">
+          <%= hidden_input f, :draft, id: "hidden-draft", class: "shadow-sm focus:ring-green-500 focus:border-green-500 block w-full sm:text-sm border-gray-300 rounded-md" %>
+          
+          <a
+            onclick="document.getElementById('hidden-draft').value == 'true' ? document.getElementById('hidden-draft').value = 'false' : document.getElementById('hidden-draft').value = 'true';"
+            phx-click={Phoenix.LiveView.JS.dispatch("change", to: "#hidden-draft")}
+            class={if !toggle_draft_field(@changeset), do: "bg-green-600 relative inline-flex flex-shrink-0 h-10 w-16 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500", else: "bg-red-200 relative inline-flex flex-shrink-0 h-10 w-16 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"} 
+            role="switch"
+            aria-checked="false">
+            <span class="sr-only">Draft</span>
+
+            <span class={if !toggle_draft_field(@changeset), do: "translate-x-6 pointer-events-none relative inline-block h-9 w-9 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200", else: "translate-x-0 pointer-events-none relative inline-block h-9 w-9 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200" }>
+              <span class={if !toggle_draft_field(@changeset), do: "opacity-0 ease-out duration-100 absolute inset-0 h-full w-full flex items-center justify-center transition-opacity", else: "opacity-100 ease-in duration-200 absolute inset-0 h-full w-full flex items-center justify-center transition-opacity"} aria-hidden="true">
+                <svg class="h-5 w-5 text-red-400" fill="none" viewBox="0 0 12 12">
+                  <path d="M4 8l2-2m0 0l2-2M6 6L4 4m2 2l2 2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </span>
+              <span class={if !toggle_draft_field(@changeset), do: "opacity-100 ease-in duration-200 absolute inset-0 h-full w-full flex items-center justify-center transition-opacity", else: "opacity-0 ease-out duration-100 absolute inset-0 h-full w-full flex items-center justify-center transition-opacity"} aria-hidden="true">
+                <svg class="h-5 w-5 text-green-600" fill="currentColor" viewBox="0 0 12 12">
+                  <path d="M3.707 5.293a1 1 0 00-1.414 1.414l1.414-1.414zM5 8l-.707.707a1 1 0 001.414 0L5 8zm4.707-3.293a1 1 0 00-1.414-1.414l1.414 1.414zm-7.414 2l2 2 1.414-1.414-2-2-1.414 1.414zm3.414 2l4-4-1.414-1.414-4 4 1.414 1.414z" />
+                </svg>
+              </span>
+            </span>
+          </a>
+        </div>
+      </div>
+
+      <div class="sm:col-span-6">
+        <%= label f, :description, class: "block text-sm font-medium text-gray-700" %>
+        <div class="mt-1">
+          <%= textarea f, :description, rows: "3", class: "shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border border-gray-300 rounded-md" %>
+        </div>
+        <p id="description-info" class="mt-2 text-sm text-gray-500">Short description about post. (<%= description_length(@changeset) %>/256) limit</p>
+        <%= error_tag f, :description %>
+      </div>
+      
+      <div class="sm:col-span-6">
+        <%= label f, :body, class: "block text-sm font-medium text-gray-700" do %>
+        Body <span class="mt-2 text-sm text-gray-400">Full content of post (<a href="https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax">markdown supported</a>)</span>
+        <% end %>
+        <div class="mt-1">
+          <%= textarea f, :body, rows: "20", class: "placeholder-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border border-gray-300 rounded-md", placeholder: "# H1 (note avolid H1s because the title is alrady an H1&#x0a;## H2&#x0a;&#x0a;Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.  asdfasf&#x0a;&#x0a;* List item&#x0a;* List item&#x0a;---&#x0a;- List item&#x0a;- List item&#x0a;&#x0a;> Some block quote&#x0a;> -- foo bar&#x0a;&#x0a;[some link tittle](http://some_link)&#x0a;I just love **bold text**.&#x0a;Italicized text is the *cat's meow*.&#x0a;\\* Without the backslash, this would be a bullet in an unordered list." |> raw %>
+          <%= error_tag f, :body %>
+        </div>
+        
+        <div class="relative my-20">
+          <div class="absolute inset-0 flex items-center" aria-hidden="true">
+            <div class="w-full border-t border-gray-300"></div>
+          </div>
+          <div class="relative flex justify-center">
+            <span class="px-3 bg-white text-lg font-medium text-gray-900"> Body Preview </span>
+          </div>
+        </div>
+
+        <div id="preview" class="prose">
+          <%= @changeset.changes |> Map.get(:body, @post.body) |> parse_markdown |> raw %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="pt-5">
+    <div class="flex justify-end">
+      <%= live_patch "Cancel", to: "/admin/posts",  class: "bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" %>
+      <button type="submit" class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Save</button>
+    </div>
+  </div>
+</.form>
+</div>
