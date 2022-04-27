@@ -53,7 +53,8 @@ defmodule OpalNova.MixProject do
       {:sentry, "~> 8.0"},
       {:hackney, "~> 1.8"},
       {:swoosh, "~> 1.6"},
-      {:tailwind, "~> 0.1", runtime: Mix.env() == :dev}
+      {:tailwind, "~> 0.1", runtime: Mix.env() == :dev},
+      {:ex_fontawesome, "~> 0.7"}
     ]
   end
 
