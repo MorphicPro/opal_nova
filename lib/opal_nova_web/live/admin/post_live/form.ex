@@ -5,7 +5,7 @@ defmodule OpalNovaWeb.Admin.PostLive.Form do
   alias OpalNova.Blog.Post
 
   @impl true
-  def mount(_params, session, socket) do
+  def mount(_params, _session, socket) do
     {:ok, socket}
   end
 

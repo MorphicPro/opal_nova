@@ -5,7 +5,7 @@ defmodule OpalNovaWeb.Admin.CommentLive.FormComponent do
 
   @impl true
   def update(%{comment: comment} = assigns, socket) do
-    %{changes: %{captcha: %{text: text}}} = changeset = Blog.change_comment(comment)
+    %{changes: %{captcha: %{text: _text}}} = changeset = Blog.change_comment(comment)
 
     {:ok,
      socket
