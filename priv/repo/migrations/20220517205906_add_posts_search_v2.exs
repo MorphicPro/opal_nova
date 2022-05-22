@@ -1,4 +1,4 @@
-defmodule OpalNova.Repo.Migrations.AddPostsSearch do
+defmodule OpalNova.Repo.Migrations.AddPostsSearchV2 do
   use Ecto.Migration
 
   def change do
