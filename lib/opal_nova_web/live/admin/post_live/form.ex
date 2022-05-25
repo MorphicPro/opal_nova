@@ -14,10 +14,10 @@ defmodule OpalNovaWeb.Admin.PostLive.Form do
     {:noreply, apply_action(socket, socket.assigns.live_action, params)}
   end
 
-  defp apply_action(socket, :edit, %{"id" => id}) do
+  defp apply_action(%{assigns: %{current_user: current_user}} = socket, :edit, %{"id" => id}) do
     socket
     |> assign(:page_title, "Edit Post")
-    |> assign(:post, Blog.get_post!(id))
+    |> assign(:post, Blog.get_post!(id, current_user, preload: [:tags]))
   end
 
   defp apply_action(socket, :new, _params) do

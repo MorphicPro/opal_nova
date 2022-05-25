@@ -2,6 +2,8 @@ defmodule OpalNova.Blog.Post do
   use Ecto.Schema
   import Ecto.Changeset
 
+  alias OpalNova.Blog.{Tag, Tagging}
+
   @behaviour Bodyguard.Schema
 
   def scope(query, %OpalNova.Accounts.User{admin: true}, _) do
@@ -25,6 +27,13 @@ defmodule OpalNova.Blog.Post do
     field :source_image, :string
     field :cover_image, :string
     field :thumb_image, :string
+    field :tag_list, {:array, :string}, virtual: true
+
+    many_to_many(:tags, Tag,
+      join_through: "post_tags",
+      on_delete: :delete_all,
+      on_replace: :delete
+    )
 
     has_many :comments, OpalNova.Blog.Comment
 
@@ -44,8 +53,36 @@ defmodule OpalNova.Blog.Post do
       :cover_image,
       :source_image,
       :cover_image,
-      :thumb_image
+      :thumb_image,
     ])
-    |> validate_required([:title, :body, :description, :published_at, :draft, :cover_image, :slug])
+    |> validate_required([
+      :title,
+      :body,
+      :description,
+      :published_at,
+      :draft,
+      :cover_image,
+      :slug,
+    ])
+    |> put_tags_list()
+    |> parse_tags_assoc()
   end
+
+  defp put_tags_list(%{valid?: true, changes: %{body: body}} = changeset) do
+    tag_list = Regex.scan(~r/#(\w*)/, body) |> Enum.map(fn [_, tag] -> tag end)
+
+    changeset
+    |> put_change(:tag_list, tag_list)
+  end
+
+  defp put_tags_list(changeset), do: changeset
+
+  defp parse_tags_assoc(
+         %Ecto.Changeset{valid?: true, changes: %{tag_list: _tags_list}} = changeset
+       ) do
+    changeset
+    |> Tagging.changeset(OpalNova.Blog.Tag, :tags, :tag_list)
+  end
+
+  defp parse_tags_assoc(changeset), do: changeset
 end

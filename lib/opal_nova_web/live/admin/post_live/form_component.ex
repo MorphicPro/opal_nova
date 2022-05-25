@@ -116,7 +116,7 @@ defmodule OpalNovaWeb.Admin.PostLive.FormComponent do
         end
 
       _ ->
-        case Blog.update_post(socket.assigns.post, post_params) do
+        case Blog.update_post(socket.assigns.post, post_params) |> IO.inspect() do
           {:ok, post} ->
             Phoenix.PubSub.broadcast(
               OpalNova.PubSub,

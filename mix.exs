@@ -59,7 +59,8 @@ defmodule OpalNova.MixProject do
       {:slugify, "~> 1.3"},
       {:earmark, "~> 1.4"},
       {:captcha, "~> 0.1.0"},
-      {:timex, "~> 3.7"}
+      {:timex, "~> 3.7"},
+      {:dissolver, git: "https://github.com/MorphicPro/dissolver"}
     ]
   end
 

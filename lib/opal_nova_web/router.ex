@@ -79,6 +79,8 @@ defmodule OpalNovaWeb.Router do
     on_mount: OpalNovaWeb.UserLive do
     scope "/", OpalNovaWeb do
       pipe_through [:browser]
+
+      live "/posts/tags/:tag", PostLive.Index, :tag,  as: :fe_post_tag
       live "/posts/:slug", PostLive.Show, :show, as: :fe_post_show
       live "/", PostLive.Index, :index, as: :fe_post_index
     end

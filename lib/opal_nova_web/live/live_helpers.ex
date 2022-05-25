@@ -5,6 +5,10 @@ defmodule OpalNovaWeb.LiveHelpers do
   alias OpalNovaWeb.NavLive
   alias Phoenix.LiveView.JS
 
+  alias OpalNovaWeb.Router.Helpers, as: Routes
+
+  import OpalNovaWeb.Dissolver.Live.Tailwind
+
   @doc """
   Renders a live component inside a modal.
 
@@ -311,5 +315,12 @@ defmodule OpalNovaWeb.LiveHelpers do
       :lt ->
         true
     end
+  end
+  def post_paginate_helper(socket, action, nil) do
+    &(Routes.fe_post_index_path(socket, action, &1))
+  end
+
+  def post_paginate_helper(socket, action, scope) do
+    &(Routes.fe_post_index_path(socket, action, scope, &1))
   end
 end

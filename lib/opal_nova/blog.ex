@@ -6,7 +6,7 @@ defmodule OpalNova.Blog do
   import Ecto.Query, warn: false
 
   alias OpalNova.Repo
-  alias OpalNova.Blog.Post
+  alias OpalNova.Blog.{Post, Tag}
   alias OpalNova.Accounts.User
 
   @behaviour Bodyguard.Policy
@@ -21,6 +21,25 @@ defmodule OpalNova.Blog do
 
   # Catch-all: deny everything else
   def authorize(_, _, _), do: false
+
+  @doc """
+  Returns the list of posts.
+
+  ## Examples
+
+      iex> list_posts()
+      [%Post{}, ...]
+
+  """
+  def list_posts(params, user) do
+    from(
+      p in Post,
+      preload: [:tags]
+    )
+    |> Bodyguard.scope(user)
+    |> Repo.order_by_published_at()
+    |> Dissolver.paginate(params)
+  end
 
   @doc """
   Returns the list of posts.
@@ -64,6 +83,32 @@ defmodule OpalNova.Blog do
 
   """
   def get_post!(id), do: Repo.get!(Post, id)
+
+
+  @doc """
+  Gets a single post.
+
+  Raises `Ecto.NoResultsError` if the Post does not exist.
+
+  ## Examples
+
+      iex> get_post!("foo")
+      %Post{}
+
+      iex> get_post!("bar")
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_post!(id, current_user, options \\ []) do
+    preload = Keyword.get(options, :preload, [])
+
+    Post
+    |> Repo.by_id(id)
+    |> from(preload: ^preload)
+    |> Bodyguard.scope(current_user)
+    |> Repo.one!()
+  end
+
 
   @doc """
   Gets a single post.
@@ -249,5 +294,47 @@ defmodule OpalNova.Blog do
   """
   def change_comment(%Comment{} = comment, attrs \\ %{}) do
     Comment.changeset(comment, attrs)
+  end
+
+   @doc """
+  Gets a single tag and all of its pics.
+
+  Raises `Ecto.NoResultsError` if the Tag does not exist.
+
+  ## Examples
+
+      iex> get_tag_by_slug!(foobar)
+      %Tag{ pics: [...] }
+
+      iex> get_comment!(badtag)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_post_for_tag!(tag_name, user, params \\ %{}) do
+    posts =
+      from(p in Post)
+      |> Bodyguard.scope(user)
+
+    [total_count] =
+      from(pt in "post_tags",
+        join: p in ^posts,
+        on: p.id == pt.post_id,
+        join: t in "tags",
+        on: t.id == pt.tag_id,
+        where: t.name == ^tag_name,
+        select: count()
+      )
+      |> Repo.all()
+
+    {posts_query, k} =
+      from(p in Post, order_by: [desc: :inserted_at], preload: [:tags])
+      |> Bodyguard.scope(user)
+      |> Dissolver.paginate(params, total_count: total_count, lazy: true)
+
+    tag =
+      from(t in Tag, where: t.name == ^tag_name, preload: [posts: ^posts_query])
+      |> Repo.one!()
+
+    {tag, k}
   end
 end

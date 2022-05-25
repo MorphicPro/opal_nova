@@ -3,6 +3,8 @@ defmodule OpalNovaWeb.PostLive.Index do
 
   alias OpalNova.Blog
 
+  import OpalNovaWeb.Dissolver.Live.Tailwind
+
   @impl true
   def mount(_params, _session, socket) do
     posts = list_posts()
@@ -13,7 +15,7 @@ defmodule OpalNovaWeb.PostLive.Index do
       end)
     end
 
-    {:ok, assign(socket, :posts, list_posts())}
+    {:ok, assign(socket, :posts, [])}
   end
 
   @impl true
@@ -21,9 +23,25 @@ defmodule OpalNovaWeb.PostLive.Index do
     {:noreply, apply_action(socket, socket.assigns.live_action, params)}
   end
 
-  defp apply_action(socket, :index, _params) do
+  defp apply_action(%{assigns: %{current_user: current_user}} = socket, :index, params) do
+
+    {posts, dissolver} = Blog.list_posts(params, current_user)
+
     socket
     |> assign(:page_title, "Listing Posts")
+    |> assign(:post, nil)
+    |> assign(:posts, posts)
+    |> assign(:dissolver, dissolver)
+    |> assign(scope: nil)
+  end
+
+  defp apply_action(%{assigns: %{current_user: current_user}} = socket, :tag, %{"tag" => tag} = params) do
+    {tag, dissolver} = Blog.get_post_for_tag!(tag, current_user, params)
+
+    socket
+    |> assign(page_title: "Listing Posts")
+    |> assign(scope: tag.name)
+    |> assign(posts: tag.posts)
     |> assign(:post, nil)
   end
 
