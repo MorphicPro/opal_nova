@@ -58,7 +58,7 @@
             </div>
           </div>
           <div class="my-6 text-sm text-gray-700 space-y-4 prose-sm">
-            <%= post.description %>
+            <%= post.description |> parse_markdown() |> parse_tags(post_paginate_helper(@socket, :tag)) |> raw %>
           </div>
         </div>
       </article>

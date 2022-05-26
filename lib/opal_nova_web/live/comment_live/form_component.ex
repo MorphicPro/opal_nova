@@ -21,7 +21,7 @@ defmodule OpalNovaWeb.CommentLive.FormComponent do
         %{assigns: %{post_id: post_id}, private: %{captcha_text: captcha_text}} = socket
       ) do
     %{changes: %{captcha: %{text: text}}} =
-      reset_changeset = Blog.change_comment(%OpalNova.Blog.Comment{}) |> IO.inspect()
+      reset_changeset = Blog.change_comment(%OpalNova.Blog.Comment{})
 
     case Blog.create_comment(comment_params |> Map.merge(%{"post_id" => post_id}), captcha_text) do
       {:ok, comment} ->

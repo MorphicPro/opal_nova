@@ -42,6 +42,7 @@ defmodule OpalNovaWeb.PostLive.Index do
     |> assign(page_title: "Listing Posts")
     |> assign(scope: tag.name)
     |> assign(posts: tag.posts)
+    |> assign(:dissolver, dissolver)
     |> assign(:post, nil)
   end
 

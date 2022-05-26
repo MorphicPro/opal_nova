@@ -68,8 +68,8 @@ defmodule OpalNova.Blog.Post do
     |> parse_tags_assoc()
   end
 
-  defp put_tags_list(%{valid?: true, changes: %{body: body}} = changeset) do
-    tag_list = Regex.scan(~r/#(\w*)/, body) |> Enum.map(fn [_, tag] -> tag end)
+  defp put_tags_list(%{valid?: true, changes: %{description: description}} = changeset) do
+    tag_list = Regex.scan(~r/(#\w+)/, description) |> Enum.map(fn [_, tag] -> tag |> String.replace("#", "") end)
 
     changeset
     |> put_change(:tag_list, tag_list)

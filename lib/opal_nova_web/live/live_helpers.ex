@@ -316,11 +316,27 @@ defmodule OpalNovaWeb.LiveHelpers do
         true
     end
   end
+
+  def post_paginate_helper(socket, :tag) do
+    &Routes.fe_post_tag_path(socket, :tag, &1)
+  end
+
+  def post_paginate_helper(socket, :tag, scope) do
+    &Routes.fe_post_tag_path(socket, :tag, scope, &1)
+  end
+
   def post_paginate_helper(socket, action, nil) do
-    &(Routes.fe_post_index_path(socket, action, &1))
+    &Routes.fe_post_index_path(socket, action, &1)
   end
 
   def post_paginate_helper(socket, action, scope) do
-    &(Routes.fe_post_index_path(socket, action, scope, &1))
+    &Routes.fe_post_index_path(socket, action, &1)
+  end
+
+  def parse_tags(content, url) do
+    String.replace(content, ~r/(#\w+)/, fn match ->
+      {:safe, html} = live_patch(match, to: url.(match |> String.replace("#", "")))
+      html
+    end)
   end
 end
