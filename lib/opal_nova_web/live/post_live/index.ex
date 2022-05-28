@@ -6,8 +6,8 @@ defmodule OpalNovaWeb.PostLive.Index do
   import OpalNovaWeb.Dissolver.Live.Tailwind
 
   @impl true
-  def mount(_params, _session, socket) do
-    posts = list_posts()
+  def mount(params, _session, socket) do
+    {posts, dissolver} = Blog.list_posts(params, socket.assigns.current_user)
 
     if connected?(socket) do
       Enum.each(posts, fn %{id: id} ->
@@ -15,7 +15,32 @@ defmodule OpalNovaWeb.PostLive.Index do
       end)
     end
 
-    {:ok, assign(socket, :posts, [])}
+    {:ok,
+     socket
+     |> assign(:page_title, "Listing Posts")
+     |> assign(:post, nil)
+     |> assign(:posts, posts)
+     |> assign(:dissolver, dissolver)
+     |> assign(scope: nil)}
+  end
+
+  def mount(%{tag: tag} = params, _session, socket) do
+    {tag, dissolver} = Blog.get_post_for_tag!(tag, socket.assigns.current_user, params)
+
+    if connected?(socket) do
+      Phoenix.PubSub.subscribe(OpalNova.PubSub, "post:tag:#{tag}")
+      Enum.each(tag.posts, fn %{id: id} ->
+        Phoenix.PubSub.subscribe(OpalNova.PubSub, "post:#{id}")
+      end)
+    end
+
+    {:ok,
+     socket
+     |> assign(page_title: "Listing Posts")
+     |> assign(scope: tag.name)
+     |> assign(posts: tag.posts)
+     |> assign(:dissolver, dissolver)
+     |> assign(:post, nil)}
   end
 
   @impl true
@@ -24,7 +49,6 @@ defmodule OpalNovaWeb.PostLive.Index do
   end
 
   defp apply_action(%{assigns: %{current_user: current_user}} = socket, :index, params) do
-
     {posts, dissolver} = Blog.list_posts(params, current_user)
 
     socket
@@ -35,7 +59,11 @@ defmodule OpalNovaWeb.PostLive.Index do
     |> assign(scope: nil)
   end
 
-  defp apply_action(%{assigns: %{current_user: current_user}} = socket, :tag, %{"tag" => tag} = params) do
+  defp apply_action(
+         %{assigns: %{current_user: current_user}} = socket,
+         :tag,
+         %{"tag" => tag} = params
+       ) do
     {tag, dissolver} = Blog.get_post_for_tag!(tag, current_user, params)
 
     socket

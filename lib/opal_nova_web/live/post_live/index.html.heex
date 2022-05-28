@@ -22,32 +22,47 @@
     </div> 
   </:title>
 
-  <%= if @live_action in [:new, :edit] do %>
-    <.modal return_to={Routes.post_index_path(@socket, :index)}>
-      <.live_component
-        module={OpalNovaWeb.Admin.PostLive.FormComponent}
-        id={@post.id || :new}
-        title={@page_title}
-        action={@live_action}
-        post={@post}
-        return_to={Routes.post_index_path(@socket, :index)}
-      />
-    </.modal>
-  <% end %>
   <ul role="list" class="space-y-10">
     <%= for post <- @posts do %>
     <li class="bg-white px-8 py-6 shadow sm:p-6 sm:rounded-lg border border-slate-300">
       <article class="md:flex">
         <div class="mb-4 flex-shrink-0 md:mb-0 md:mr-4">
-          <%= live_redirect to: Routes.fe_post_show_path(@socket, :show, post.slug) do %>
-          <img src={post.cover_image} class="w-full md:w-48 mt-4" %>
+          <%= if published?(post) do %>
+            <%= live_patch to: Routes.fe_post_show_path(@socket, :show, post.slug) do %>
+              <img src={post.cover_image} class="w-full md:w-48 mt-4" %>
+            <% end %>
+          <% else %>
+            <%= live_patch to: Routes.post_show_path(@socket, :show, post.id) do %>
+              <img src={post.cover_image} class="w-full md:w-48 mt-4" %>
+            <% end %>
           <% end %>
         </div>
         <div class="w-full">
           <div>
             <div class="flex space-x-3">  
               <div class="min-w-0 flex-1">
-                <h2 class="mt-4 text-lg font-medium text-gray-900"><%= live_redirect to: Routes.fe_post_show_path(@socket, :show, post.slug), class: "hover:underline hover:text-gray-500" do %><%= post.title %><% end %></h2>
+                <h2 class="mt-4 text-lg font-medium text-gray-900">
+                <%= if published?(post) do %>
+                <%= live_patch to: Routes.fe_post_show_path(@socket, :show, post.slug), class: "hover:underline hover:text-gray-500" do %>
+                  <%= post.title %>
+                <% end %>
+                <% else %>
+                  <%= live_patch to: Routes.post_show_path(@socket, :show, post.id), class: "hover:underline hover:text-gray-500" do %>
+                  <%= post.title %>
+                  <% end %>
+                <% end %>
+                <%= if admin?(@current_user) do %>
+                  <%= if published?(post) do %>
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-sm font-medium bg-green-100 text-green-800">Published</span>
+                  <% else %>
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-sm font-medium bg-red-100 text-red-800">Not Published</span>
+                  <% end %>
+                  <%= live_patch to: Routes.post_show_path(@socket, :show, post.id), class: "hover:underline hover:text-gray-500" do %>
+                  <span class="inline-flex items-center px-3 py-1.5 rounded-md text-sm font-medium bg-slate-200 text-slate-800"><FontAwesome.LiveView.icon name="pencil" type="solid" class="h-3 w-3 fill-current" /></span>
+                  <% end %>
+                <% end %>
+              </h2>
+                
                 <p class="text-sm text-gray-500 mt-2">
                   <a href="#" class="relative first-letter:hover:underline">
                     <FontAwesome.LiveView.icon name="calendar" type="solid" class="absolute top-0.5 h-3 w-3 fill-current" />

@@ -1,6 +1,12 @@
 <div class="min-h-full flex">
   <.live_component module={NavLive} id="nav">
     <:links>
+      <NavLive.link path={"/"}>
+        <:icon>
+          <NavLive.icon type="solid" name="display" />
+        </:icon>
+        Go to Main Site
+      </NavLive.link>
       <NavLive.link path={"/admin"} active={@socket.view |> to_string =~ "DashLive"}>
         <:icon>
           <NavLive.icon type="solid" name="house" active={@socket.view |> to_string =~ "DashLive"} />

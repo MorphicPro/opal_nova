@@ -339,4 +339,7 @@ defmodule OpalNovaWeb.LiveHelpers do
       html
     end)
   end
+
+  def admin?(%{admin: true}), do: true
+  def admin?(_), do: false
 end
