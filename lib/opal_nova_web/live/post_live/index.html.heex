@@ -57,7 +57,7 @@
                   <% else %>
                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-sm font-medium bg-red-100 text-red-800">Not Published</span>
                   <% end %>
-                  <%= live_patch to: Routes.post_show_path(@socket, :show, post.id), class: "hover:underline hover:text-gray-500" do %>
+                  <%= live_patch to: Routes.post_form_path(@socket, :edit, post.id), class: "hover:underline hover:text-gray-500" do %>
                   <span class="inline-flex items-center px-3 py-1.5 rounded-md text-sm font-medium bg-slate-200 text-slate-800"><FontAwesome.LiveView.icon name="pencil" type="solid" class="h-3 w-3 fill-current" /></span>
                   <% end %>
                 <% end %>
