@@ -28,6 +28,7 @@ defmodule OpalNova.Blog.Post do
     field :cover_image, :string
     field :thumb_image, :string
     field :tag_list, {:array, :string}, virtual: true
+    field :comment_count, :integer, default: 0
 
     many_to_many(:tags, Tag,
       join_through: "post_tags",
@@ -54,6 +55,7 @@ defmodule OpalNova.Blog.Post do
       :source_image,
       :cover_image,
       :thumb_image,
+      :comment_count,
     ])
     |> validate_required([
       :title,

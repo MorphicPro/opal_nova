@@ -1,6 +1,8 @@
 defmodule OpalNova.Blog.Comment do
   use Ecto.Schema
   import Ecto.Changeset
+  import Ecto.Query
+  alias OpalNova.Blog.Post
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
@@ -20,11 +22,20 @@ defmodule OpalNova.Blog.Comment do
   def changeset(comment, attrs, captcha_text \\ "") do
     comment
     |> cast(attrs, [:message, :flagged, :captcha_return, :post_id, :name])
+    |> prepare_changes(fn changeset ->
+      if post_id = get_change(changeset, :post_id) do
+        query = from Post, where: [id: ^post_id]
+        changeset.repo.update_all(query, inc: [comment_count: 1])
+      end
+      changeset
+    end)
     |> validate_required([:message, :flagged, :captcha_return, :post_id, :name])
     |> validate_captcha(captcha_text)
     |> validate_required(:captcha_return)
     |> put_captcha()
   end
+
+
 
   defp validate_captcha(%{changes: %{captcha_return: captcha_return}} = cs, captcha_text) do
     if captcha_return == captcha_text do
