@@ -342,4 +342,13 @@ defmodule OpalNovaWeb.LiveHelpers do
 
   def admin?(%{admin: true}), do: true
   def admin?(_), do: false
+
+  def readtime_in_minutes(body) do
+    body
+    |> String.split(~r{[^\w]})
+    |> Enum.count()
+    |> (&(&1 / 225)).()
+    |> Float.ceil()
+    |> trunc()
+  end
 end
