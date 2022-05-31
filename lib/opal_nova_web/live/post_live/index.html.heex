@@ -8,19 +8,14 @@
         </div>
       </:left>
       <:right>
-        <.user_nav current_user={@current_user} login={Routes.user_session_path(@socket, :new)} register={Routes.user_registration_path(@socket, :new)} />
+        <.user_nav 
+          current_user={@current_user} 
+          login={Routes.user_session_path(@socket, :new)} 
+          register={Routes.user_registration_path(@socket, :new)} 
+          users={@users} />
       </:right>
     </.page_header>
   </:page_header>
-
-  <:title>
-    <div class="sm:flex sm:items-center lg:my-0 my-8">
-      <div class="sm:flex-auto">
-        <h1 class="text-xl font-semibold text-gray-900">Posts</h1>
-        <p class="mt-2 text-sm text-gray-700"><%= "Listing #{Enum.count(@posts)} blog posts." %></p>
-      </div>
-    </div> 
-  </:title>
 
   <div class="relative pt-16 pb-20 px-4 sm:px-6 lg:pt-24 lg:pb-28 lg:px-8">
     <div class="absolute inset-0">

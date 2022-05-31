@@ -178,6 +178,7 @@ defmodule OpalNovaWeb.LiveHelpers do
       assigns
       |> assign_new(:login, fn -> nil end)
       |> assign_new(:current_user, fn -> nil end)
+      |> assign_new(:users, fn -> [] end)
 
     ~H"""
     <!-- Profile dropdown -->
@@ -229,6 +230,10 @@ defmodule OpalNovaWeb.LiveHelpers do
           <FontAwesome.LiveView.icon name="lock" type="solid" class="inline h-4 w-4 fill-current" />
           <span class="ml-2">Log out</span>
         </a>
+        <span  href="/users/log_out" class="block px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1">
+          <FontAwesome.LiveView.icon name="users" type="solid" class="inline h-4 w-4 fill-current" />
+          <span class="ml-2">Users Online <%= Enum.count(@users) %></span>
+        </span>
       </div>
       <% end %>
     </div>
