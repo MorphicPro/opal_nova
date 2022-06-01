@@ -193,10 +193,10 @@ defmodule OpalNovaWeb.LiveHelpers do
           <FontAwesome.LiveView.icon name="circle-user" type="solid" class="h-8 w-8 fill-current" />
           <% else %>
             <a href={@login}>
-              <span class="mr-4 text-sm font-bold hidden lg:block xl:block 2xl:block">Log in</span>
+              <span class="mr-4 text-sm font-bold">Log in</span>
             </a>
             <a href={@register}>
-              <span class="mr-4 text-sm font-bold hidden lg:block xl:block 2xl:block bg-slate-700 text-slate-100 p-2 rounded">Register</span>
+              <span class="mr-4 text-sm font-bold bg-slate-700 text-slate-100 p-2 rounded">Register</span>
             </a>
           <% end %>
         </div>
