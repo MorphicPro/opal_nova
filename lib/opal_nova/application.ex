@@ -18,7 +18,6 @@ defmodule OpalNova.Application do
       {Phoenix.PubSub, name: OpalNova.PubSub},
       # Start the Endpoint (http/https)
       OpalNovaWeb.Endpoint,
-
       OpalNova.Presence
       # Start a worker by calling: OpalNova.Worker.start_link(arg)
       # {OpalNova.Worker, arg}

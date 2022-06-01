@@ -27,6 +27,7 @@ defmodule OpalNova.Blog.Comment do
         query = from Post, where: [id: ^post_id]
         changeset.repo.update_all(query, inc: [comment_count: 1])
       end
+
       changeset
     end)
     |> validate_required([:message, :flagged, :captcha_return, :post_id, :name])
@@ -34,8 +35,6 @@ defmodule OpalNova.Blog.Comment do
     |> validate_required(:captcha_return)
     |> put_captcha()
   end
-
-
 
   defp validate_captcha(%{changes: %{captcha_return: captcha_return}} = cs, captcha_text) do
     if captcha_return == captcha_text do

@@ -84,7 +84,6 @@ defmodule OpalNova.Blog do
   """
   def get_post!(id), do: Repo.get!(Post, id)
 
-
   @doc """
   Gets a single post.
 
@@ -108,7 +107,6 @@ defmodule OpalNova.Blog do
     |> Bodyguard.scope(current_user)
     |> Repo.one!()
   end
-
 
   @doc """
   Gets a single post.
@@ -296,7 +294,7 @@ defmodule OpalNova.Blog do
     Comment.changeset(comment, attrs)
   end
 
-   @doc """
+  @doc """
   Gets a single tag and all of its pics.
 
   Raises `Ecto.NoResultsError` if the Tag does not exist.

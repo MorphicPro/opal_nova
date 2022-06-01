@@ -55,7 +55,7 @@ defmodule OpalNova.Blog.Post do
       :source_image,
       :cover_image,
       :thumb_image,
-      :comment_count,
+      :comment_count
     ])
     |> validate_required([
       :title,
@@ -64,14 +64,16 @@ defmodule OpalNova.Blog.Post do
       :published_at,
       :draft,
       :cover_image,
-      :slug,
+      :slug
     ])
     |> put_tags_list()
     |> parse_tags_assoc()
   end
 
   defp put_tags_list(%{valid?: true, changes: %{description: description}} = changeset) do
-    tag_list = Regex.scan(~r/(#\w+)/, description) |> Enum.map(fn [_, tag] -> tag |> String.replace("#", "") end)
+    tag_list =
+      Regex.scan(~r/(#\w+)/, description)
+      |> Enum.map(fn [_, tag] -> tag |> String.replace("#", "") end)
 
     changeset
     |> put_change(:tag_list, tag_list)

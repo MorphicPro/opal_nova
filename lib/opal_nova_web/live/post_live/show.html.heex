@@ -7,7 +7,7 @@
         </div>
       </:left>
       <:right>
-        <.user_nav current_user={@current_user} login={Routes.user_session_path(@socket, :new)} register={Routes.user_registration_path(@socket, :new)} />
+        <.user_nav current_user={@current_user} login={Routes.user_session_path(@socket, :new)} register={Routes.user_registration_path(@socket, :new)} users={@users} />
       </:right>
     </.page_header>
   </:page_header>
