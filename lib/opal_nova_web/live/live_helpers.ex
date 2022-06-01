@@ -73,14 +73,6 @@ defmodule OpalNovaWeb.LiveHelpers do
     ~H"""
     <div class={@class <> " max-w-7xl mx-auto px-4 sm:px-6 md:px-8"}>
       <div class="sticky top-0 z-10 flex-shrink-0 flex h-16 bg-white border-b border-gray-200">
-        <button
-          phx-click={NavLive.show_nav()}
-          type="button"
-          class="px-4 border-r border-gray-200 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-900 lg:hidden">
-          <span class="sr-only">Open sidebar</span>
-          <FontAwesome.LiveView.icon name="ellipsis" type="solid" class="h-6 w-6 fill-current" />
-        </button>
-
         <%= render_slot(@page_header) %>
       </div>
 
