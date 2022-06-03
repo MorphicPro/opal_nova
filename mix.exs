@@ -40,7 +40,8 @@ defmodule OpalNova.MixProject do
       {:postgrex, ">= 0.0.0"},
       {:phoenix_html, "~> 3.0"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
-      {:phoenix_live_view, "~> 0.17.5"},
+      {:phoenix_live_view,
+       git: "https://github.com/phoenixframework/phoenix_live_view.git", override: true},
       {:floki, ">= 0.30.0", only: :test},
       {:phoenix_live_dashboard, "~> 0.6"},
       {:esbuild, "~> 0.4", runtime: Mix.env() == :dev},
@@ -54,7 +55,12 @@ defmodule OpalNova.MixProject do
       {:hackney, "~> 1.8"},
       {:swoosh, "~> 1.6"},
       {:tailwind, "~> 0.1", runtime: Mix.env() == :dev},
-      {:ex_fontawesome, "~> 0.7"}
+      {:ex_fontawesome, "~> 0.7"},
+      {:slugify, "~> 1.3"},
+      {:earmark, "~> 1.4"},
+      {:captcha, "~> 0.1.0"},
+      {:timex, "~> 3.7"},
+      {:dissolver, git: "https://github.com/MorphicPro/dissolver"}
     ]
   end
 

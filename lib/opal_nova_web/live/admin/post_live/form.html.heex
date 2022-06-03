@@ -1,0 +1,32 @@
+<.page_layout class="">
+
+  <:page_header>
+    <.page_header>
+      <:left>
+        <%# <.search /> %>
+      </:left>
+      <:right>
+        <.user_nav current_user={@current_user} login={Routes.user_session_path(@socket, :new)} register={Routes.user_registration_path(@socket, :new)} />
+      </:right>
+    </.page_header>
+  </:page_header>
+
+  <:title>
+    <div class="sm:flex sm:items-center">
+      <div class="sm:flex-auto">
+        <h1 class="text-xl font-semibold text-gray-900"><%= @page_title %></h1>
+      </div>
+    </div> 
+  </:title>
+
+
+  <.live_component
+    module={OpalNovaWeb.Admin.PostLive.FormComponent}
+    id={@post.id || :new}
+    title={@page_title}
+    action={@live_action}
+    post={@post}
+    return_to={Routes.post_index_path(@socket, :index)}
+  />
+
+</.page_layout>

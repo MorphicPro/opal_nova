@@ -1,0 +1,64 @@
+<.page_layout class="bg-gray-100">
+
+  <:page_header>
+    <.page_header>
+      <:left>
+        <.search />
+      </:left>
+      <:right>
+        <.user_nav current_user={@current_user} login={Routes.user_session_path(@socket, :new)} />
+      </:right>
+    </.page_header>
+  </:page_header>
+
+  <:title>
+    <div class="sm:flex sm:items-center lg:my-0 my-8">
+      <div class="sm:flex-auto">
+        <h1 class="text-xl font-semibold text-gray-900">Comments</h1>
+        <p class="mt-2 text-sm text-gray-700"><%= "Listing #{Enum.count(@comments)} blog comments." %></p>
+      </div>
+      <div class="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
+
+      </div>
+    </div> 
+  </:title>
+
+
+<%= if @live_action in [:new, :edit] do %>
+  <.modal return_to={Routes.comment_index_path(@socket, :index)}>
+    <.live_component
+      module={OpalNovaWeb.Admin.CommentLive.FormComponent}
+      id={@comment.id || :new}
+      title={@page_title}
+      action={@live_action}
+      comment={@comment}
+      return_to={Routes.comment_index_path(@socket, :index)}
+    />
+  </.modal>
+<% end %>
+
+<table>
+  <thead>
+    <tr>
+      <th>Message</th>
+      <th>Flagged</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody id="comments">
+    <%= for comment <- @comments do %>
+      <tr id={"comment-#{comment.id}"}>
+        <td><%= comment.message %></td>
+        <td><%= comment.flagged %></td>
+
+        <td>
+          <span><%= live_redirect "Show", to: Routes.comment_show_path(@socket, :show, comment) %></span>
+          <span><%= live_patch "Edit", to: Routes.comment_index_path(@socket, :edit, comment) %></span>
+          <span><%= link "Delete", to: "#", phx_click: "delete", phx_value_id: comment.id, data: [confirm: "Are you sure?"] %></span>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+</.page_layout>

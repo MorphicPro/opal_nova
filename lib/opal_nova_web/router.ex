@@ -2,6 +2,7 @@ defmodule OpalNovaWeb.Router do
   use OpalNovaWeb, :router
 
   import OpalNovaWeb.UserAuth
+  import OpalNovaWeb.Plug.Log
 
   pipeline :browser do
     plug :accepts, ["html"]
@@ -11,6 +12,7 @@ defmodule OpalNovaWeb.Router do
     plug :protect_from_forgery
     plug :put_secure_browser_headers
     plug :fetch_current_user
+    plug :inspect_conn
   end
 
   pipeline :api do
@@ -51,6 +53,39 @@ defmodule OpalNovaWeb.Router do
     end
   end
 
+  live_session :admin,
+    root_layout: {OpalNovaWeb.LayoutView, "admin.html"},
+    on_mount: OpalNovaWeb.UserAuthLive do
+    scope "/admin", OpalNovaWeb do
+      pipe_through [:browser, :require_authenticated_user]
+
+      live "/posts/new", Admin.PostLive.Form, :new
+      live "/posts/:id/show/edit", Admin.PostLive.Form, :edit
+      live "/posts/:id", Admin.PostLive.Show, :show
+      live "/posts", Admin.PostLive.Index, :index
+
+      live "/comments", Admin.CommentLive.Index, :index
+      live "/comments/:id/edit", Admin.CommentLive.Index, :edit
+
+      live "/comments/:id", Admin.CommentLive.Show, :show
+      live "/comments/:id/show/edit", Admin.CommentLive.Show, :edit
+
+      live "/", Admin.DashLive.Index, :index
+    end
+  end
+
+  live_session :user,
+    root_layout: {OpalNovaWeb.LayoutView, "root.html"},
+    on_mount: OpalNovaWeb.UserLive do
+    scope "/", OpalNovaWeb do
+      pipe_through [:browser]
+
+      live "/posts/tags/:tag", PostLive.Index, :tag, as: :fe_post_tag
+      live "/posts/:slug", PostLive.Show, :show, as: :fe_post_show
+      live "/", PostLive.Index, :index, as: :fe_post_index
+    end
+  end
+
   ## Authentication routes
 
   scope "/", OpalNovaWeb do
@@ -74,24 +109,16 @@ defmodule OpalNovaWeb.Router do
     get "/users/settings/confirm_email/:token", UserSettingsController, :confirm_email
 
     live_session :post_admin, on_mount: OpalNovaWeb.UserAuthLive do
-      live "/posts/new", PostLive.Index, :new
-      live "/posts/:id/edit", PostLive.Index, :edit
-      live "/posts/:id/show/edit", PostLive.Show, :edit
     end
   end
 
   scope "/", OpalNovaWeb do
     pipe_through [:browser]
 
-    delete "/users/log_out", UserSessionController, :delete
+    get "/users/log_out", UserSessionController, :delete
     get "/users/confirm", UserConfirmationController, :new
     post "/users/confirm", UserConfirmationController, :create
     get "/users/confirm/:token", UserConfirmationController, :edit
     post "/users/confirm/:token", UserConfirmationController, :update
-
-    live "/posts", PostLive.Index, :index
-    live "/posts/:id", PostLive.Show, :show
-
-    get "/", PageController, :index
   end
 end

@@ -11,7 +11,17 @@ defmodule OpalNovaWeb.Endpoint do
     signing_salt: "khRqjoUE"
   ]
 
-  socket "/live", Phoenix.LiveView.Socket, websocket: [connect_info: [session: @session_options]]
+  socket "/live", Phoenix.LiveView.Socket,
+    websocket: [
+      connect_info: [
+        :peer_data,
+        :trace_context_headers,
+        :x_headers,
+        :user_agent,
+        :uri,
+        session: @session_options
+      ]
+    ]
 
   # Serve at "/" the static files from "priv/static" directory.
   #
@@ -21,7 +31,7 @@ defmodule OpalNovaWeb.Endpoint do
     at: "/",
     from: :opal_nova,
     gzip: false,
-    only: ~w(assets fonts images favicon.ico robots.txt)
+    only: ~w(assets fonts images uploads favicon.ico robots.txt)
 
   # Code reloading can be explicitly enabled under the
   # :code_reloader configuration of your endpoint.
